@@ -7,6 +7,11 @@ cap = cv2.VideoCapture(1)
 
 mpHands = mp.solutions.hands
 hands = mpHands.Hands(True)
+mpDraw = mp.solutions.drawing_utils
+
+# Drawing specifications for thin lines
+drawSpec = mpDraw.DrawingSpec(thickness=0, circle_radius=2)
+connectionSpec = mpDraw.DrawingSpec(thickness=1, color=(0, 255, 0))  # Green connections
 
 
 # displaying output from webcam
@@ -21,11 +26,12 @@ while True:
         for handLms in results.multi_hand_landmarks:
             for id, lm in enumerate(handLms.landmark):
                 h, w, c = frame.shape
-                cx, cy = int(lm.x * w), int(lm.y * h)
+                cx, cy = int(lm.x * w), int(lm.y * h) #actual pixel values
                 print(id, cx, cy)
-                if id == 4:
+                if id == 4: #thumb tip
                     cv2.circle(frame, (cx, cy), 15, (255, 0, 255), cv2.FILLED)
-            mp.solutions.drawing_utils.draw_landmarks(frame, handLms, mpHands.HAND_CONNECTIONS)
+            mpDraw.draw_landmarks(frame, handLms, mpHands.HAND_CONNECTIONS, 
+                                drawSpec, connectionSpec)
 
     cv2.imshow('Webcam Feed', frame)
 
