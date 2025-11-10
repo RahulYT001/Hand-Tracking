@@ -4,6 +4,9 @@ import time
 
 cap = cv2.VideoCapture(1)
 
+# FPS calculation variables
+pTime = 0
+cTime = 0
 
 mpHands = mp.solutions.hands
 hands = mpHands.Hands(True)
@@ -32,6 +35,22 @@ while True:
                     cv2.circle(frame, (cx, cy), 15, (255, 0, 255), cv2.FILLED)
             mpDraw.draw_landmarks(frame, handLms, mpHands.HAND_CONNECTIONS, 
                                 drawSpec, connectionSpec)
+
+    # Calculate and display FPS
+    cTime = time.time()
+    fps = 1 / (cTime - pTime)
+    pTime = cTime
+    
+    # Aesthetic FPS display with background
+    fps_text = f'FPS: {int(fps)}'
+    text_size = cv2.getTextSize(fps_text, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2)[0]
+    
+    # Create a rounded rectangle background
+    cv2.rectangle(frame, (10, 10), (text_size[0] + 30, 50), (0, 0, 0), -1)  # Black background
+    cv2.rectangle(frame, (10, 10), (text_size[0] + 30, 50), (0, 255, 0), 2)  # Green border
+    
+    # Display FPS text in white
+    cv2.putText(frame, fps_text, (20, 35), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
 
     cv2.imshow('Webcam Feed', frame)
 
